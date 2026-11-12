@@ -790,9 +790,9 @@ The one- and two-character code tables are a scarce resource. The one-character 
 
 Which of the three four-character fixed tables a given Primitive occupies is not a matter of choice. It is determined by the raw size of the Primitive modulo 3, because the encoding MUST align on a 24-bit boundary. A Primitive whose raw size is a multiple of 3 requires no lead bytes and uses the `1` selector. A raw size congruent to 2 modulo 3 requires one lead byte and uses the `2` selector. A raw size congruent to 1 modulo 3 requires two lead bytes and uses the `3` selector. Consequently, the Primitives belonging to a single algorithm are commonly distributed across more than one table, in the same way that an Ed25519 public verification key uses the one-character code `D` while an Ed25519 signature uses the two-character code `0B`.
 
-NIST finalized its first three post-quantum cryptography standards in August 2024: ML-KEM (FIPS 203) [[FIPS203](#FIPS203)], ML-DSA (FIPS 204) [[FIPS204](#FIPS204)], and SLH-DSA (FIPS 205) [[FIPS205](#FIPS205)]. The tables below define codes for the two of these that are signature schemes, ML-DSA and SLH-DSA. ML-KEM is a key-encapsulation mechanism rather than a signature scheme; codes for it are not defined here and are left to a later version. A further signature standard, FN-DSA (FIPS 206), based on the Falcon algorithm, had not been published as of this writing. Codes for it are expected to be added once its parameters and encodings are final.
+NIST finalized its first three post-quantum cryptography standards in August 2024: ML-KEM (FIPS 203) [[FIPS203](#FIPS203)], ML-DSA (FIPS 204) [[FIPS204](#FIPS204)], and SLH-DSA (FIPS 205) [[FIPS205](#FIPS205)]. The tables below define codes for all three. ML-DSA and SLH-DSA are signature schemes. ML-KEM is a key-encapsulation mechanism, and its codes are described under Post-Quantum Key Establishment and Encryption. A further signature standard, FN-DSA (FIPS 206), based on the Falcon algorithm, had not been published as of this writing. Codes for it are expected to be added once its parameters and encodings are final.
 
-Where an algorithm family defines many parameter sets, only a subset is admitted. Admitting every variant of an algorithm invites the use of variants that have received little implementation scrutiny, which weakens rather than strengthens the security of the ecosystem. FIPS 205 defines twelve SLH-DSA parameter sets, comprising two hash families, three security levels, and a small-signature (`s`) and fast-signing (`f`) variant at each level. Only the six `s` parameter sets have entries below. The `f` variants trade roughly a factor of two to three in signature size for signing speed, which is the wrong trade for a protocol whose signatures are transmitted and archived far more often than they are generated.
+Where an algorithm family defines many parameter sets, only a subset is admitted. Admitting every variant of an algorithm invites the use of variants that have received little implementation scrutiny, which weakens rather than strengthens the security of the ecosystem. FIPS 205 defines twelve SLH-DSA parameter sets, comprising two hash families, three security levels, and a small-signature (`s`) and fast-signing (`f`) variant at each level. Only the six `s` parameter sets have entries below. The `f` variants trade roughly a factor of two to three in signature size for signing speed, which is the wrong trade for a protocol whose signatures are transmitted and archived far more often than they are generated. FIPS 203 defines three ML-KEM parameter sets, at security categories 1, 3 and 5. Only ML-KEM-768 and ML-KEM-1024 have entries below.
 
 ### Table format
 
@@ -1046,11 +1046,17 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `2AAI`   | SLH-DSA-SHAKE-128s signature [[FIPS205](#FIPS205)] |      4      |              |      10480      |
 |   `2AAJ`   | SLH-DSA-SHA2-256s signature [[FIPS205](#FIPS205)] |      4      |              |      39728      |
 |   `2AAK`   | SLH-DSA-SHAKE-256s signature [[FIPS205](#FIPS205)] |      4      |              |      39728      |
+|   `2AAL`   | ML-KEM-768 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      1584      |
+|   `2AAM`   | ML-KEM-768 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      1456      |
+|   `2AAN`   | ML-KEM-1024 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      2096      |
+|   `2AAO`   | ML-KEM-1024 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      2096      |
 |            |  Basic Four Character Codes with 2 Lead Bytes  |             |              |              |
 |   `3AAA`   | ML-DSA-44 public verification key [[FIPS204](#FIPS204)] |      4      |              |      1756      |
 |   `3AAB`   | ML-DSA-87 signature [[FIPS204](#FIPS204)] |      4      |              |      6176      |
 |   `3AAC`   | SLH-DSA-SHA2-256s public verification key [[FIPS205](#FIPS205)] |      4      |              |      92      |
 |   `3AAD`   | SLH-DSA-SHAKE-256s public verification key [[FIPS205](#FIPS205)] |      4      |              |      92      |
+|   `3AAE`   | Seed of ML-KEM-768 decapsulation key [[FIPS203](#FIPS203)] |      4      |              |      92      |
+|   `3AAF`   | Seed of ML-KEM-1024 decapsulation key [[FIPS203](#FIPS203)] |      4      |              |      92      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `1AAO`   | Escape code for escaping special map field values |      4      |              |      4      |
 |   `1AAP`   | Empty value for nonce or string |      4      |              |      4      |
@@ -1096,6 +1102,18 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `7AAH`   | Decimal number string big lead size 0 |      8      |      4        |            |
 |   `8AAH`   | Decimal number string big lead size 1 |      8      |      4        |            |
 |   `9AAH`   | Decimal number string big lead size 2 |      8      |      4        |            |
+|   `4I`     | AES-256-GCM cipher bytes lead size 0 |      4      |      2        |            |
+|   `5I`     | AES-256-GCM cipher bytes lead size 1 |      4      |      2        |            |
+|   `6I`     | AES-256-GCM cipher bytes lead size 2 |      4      |      2        |            |
+|   `7AAI`   | AES-256-GCM cipher bytes big lead size 0 |      8      |      4        |            |
+|   `8AAI`   | AES-256-GCM cipher bytes big lead size 1 |      8      |      4        |            |
+|   `9AAI`   | AES-256-GCM cipher bytes big lead size 2 |      8      |      4        |            |
+|   `4J`     | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes lead size 0 |      4      |      2        |            |
+|   `5J`     | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes lead size 1 |      4      |      2        |            |
+|   `6J`     | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes lead size 2 |      4      |      2        |            |
+|   `7AAJ`   | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes big lead size 0 |      8      |      4        |            |
+|   `8AAJ`   | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes big lead size 1 |      8      |      4        |            |
+|   `9AAJ`   | HPKE Base ML-KEM-1024 HKDF-SHA384 AES-256-GCM cipher bytes big lead size 2 |      8      |      4        |            |
 
 ::: note Count Length of KERI protocol genus/version codes in --AAACAA
 \*Similar to the table above, these represent *specific* instantiations of the protocol genus codes so their count lengths are 0.
@@ -1578,6 +1596,16 @@ No code in this specification encodes a digest of a post-quantum public key as a
 
 Controller and witness signatures on KERI events are carried in indexed signature groups. The indexed code table therefore also defines indexed signature codes for every post-quantum signature scheme, using the eight-character indexed schemes described under Indexed codes, so that a post-quantum key can sign through the same path as any other key.
 
+#### Post-Quantum Key Establishment and Encryption
+
+ML-KEM [[FIPS203](#FIPS203)] lets a sender establish a shared secret with the holder of a decapsulation key. The tables in Annex A define codes for the encapsulation key, the ciphertext, and the decapsulation key seed of ML-KEM-768 and ML-KEM-1024. A seed code holds the 64-byte seed (d, z) from which ML-KEM.KeyGen_internal derives the key pair, which FIPS 203 permits an implementation to store in place of the decapsulation key (Sections 3.3 and 7.1). The expanded decapsulation key, of 2,400 or 3,168 bytes, has no code. The ML-DSA and SLH-DSA seed codes follow the same rule. The ML-KEM-1024 encapsulation key and ciphertext are both 1,568 bytes, and each has its own code, because a code identifies the type of its Primitive as well as its size.
+
+Two families of cipher codes in the variable-size tables use these keys.
+
+The AES-256-GCM codes, `4I` through `9AAI`, hold a 12-byte nonce, then the ciphertext, then the 16-byte authentication tag [[SP800-38D](#SP800-38D)]. The context in which the Primitive appears supplies the key and any additional authenticated data, in the same way that it supplies the recipient key of an X25519 sealed box. A producer that generates nonces at random MUST NOT encrypt more than 2^32 times under one key, which is the limit in Section 8.3 of SP 800-38D.
+
+The HPKE codes, `4J` through `9AAJ`, name a complete suite. They hold the output of HPKE [[RFC9180](#RFC9180)] in Base mode with the KEM ML-KEM-1024 (HPKE KEM identifier `0x0042` [[HPKE-MLKEM](#HPKE-MLKEM)]), the KDF HKDF-SHA384 (`0x0002`), and the AEAD AES-256-GCM (`0x0002`), as registered in the IANA HPKE registry [[IANA-HPKE](#IANA-HPKE)]. The raw bytes are the 1,568-byte encapsulated key `enc` followed by the AEAD ciphertext, which includes its 16-byte tag. The context supplies the `info` and additional authenticated data parameters. The registry marks the ML-KEM KEMs as unable to support the Auth and AuthPSK modes, so a sender who must be authenticated signs separately. A recipient can select every algorithm in the suite from the code alone. The HPKE Base codes `4F` through `9AAF` do not name a suite, so they do not offer that property.
+
 ## Bibliography
 
 ### Normative section
@@ -1610,6 +1638,12 @@ Controller and witness signatures on KERI events are carried in indexed signatur
 
 <a id="FIPS205">27</a><a id="ref27"></a>. FIPS 205, Stateless Hash-Based Digital Signature Standard. National Institute of Standards and Technology, August 2024. https://doi.org/10.6028/NIST.FIPS.205
 
+<a id="SP800-38D">28</a><a id="ref28"></a>. NIST SP 800-38D, Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC. M. Dworkin. National Institute of Standards and Technology, November 2007. https://doi.org/10.6028/NIST.SP.800-38D
+
+<a id="RFC9180">29</a><a id="ref29"></a>. IETF RFC-9180 [Hybrid Public Key Encryption](https://www.rfc-editor.org/rfc/rfc9180.txt). R. Barnes; K. Bhargavan; B. Lipp; C. Wood. 2022-02. Status: Informational
+
+<a id="IANA-HPKE">30</a><a id="ref30"></a>. IANA Hybrid Public Key Encryption (HPKE) registry, https://www.iana.org/assignments/hpke/hpke.xhtml
+
 ### Informative section
 
 <a id="BOM">4</a><a id="ref4"></a>. BOM, UTF Byte Order Mark, https://en.wikipedia.org/wiki/Byte_order_mark
@@ -1640,5 +1674,7 @@ Controller and witness signatures on KERI events are carried in indexed signatur
 <a id="Nathan-NDM14">17</a><a id="ref17"></a>. Analysis of the Effect of Core Affinity on High-Throughput Flows, Affinity, https://crd.lbl.gov/assets/Uploads/Nathan-NDM14.pdf
 
 <a id="PQCollisonCost">18</a><a id="ref18"></a>. Cost analysis of hash collisions: Will quantum computers make SHARCS obsolete?, D.J. Berstein, https://cr.yp.to/hash/collisioncost-20090517.pdf
+
+<a id="HPKE-MLKEM">31</a><a id="ref31"></a>. IETF Internet-Draft draft-connolly-cfrg-hpke-mlkem-04 [ML-KEM for HPKE](https://datatracker.ietf.org/doc/draft-connolly-cfrg-hpke-mlkem/04/). D. Connolly. 2024-10. Status: expired Internet-Draft
 
 
