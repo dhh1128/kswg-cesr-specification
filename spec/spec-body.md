@@ -689,6 +689,8 @@ For 64-byte signatures, the Ed25519 and ECDSA secp256k1 schemes have entries in 
 
 A new signature scheme based on Ed448 with 114-byte signatures is also supported. These signatures have a pad size of zero, so they require a four-character text code. The first character is the selector `0`, the second character is the type with 64 values, and the last two characters each provide a one-character index as a Base64 encoded integer with 64 different values. A big Version code consumes eight characters with one character for the selector, one for the type, and three for each of the dual indices.
 
+ECDSA signatures on the curve secp384r1, also known as P-384 [[SP800-186](#SP800-186)], are 96 bytes: the 48-byte integers r and s, each big-endian, concatenated. They are computed over the SHA-384 digest of the signed data [[FIPS186-5](#FIPS186-5)]. Like Ed448 signatures, they have a pad size of zero, and they use the same two indexed schemes: a four-character dual-indexed code with the `0` selector and an eight-character code with the `3` selector.
+
 Post-quantum signatures are much larger, and their raw sizes fall in all three residues modulo 3. The schemes above have no lead bytes, so they can encode only a signature whose raw size is congruent to 0 or 1 modulo 3; ML-DSA-44 and SLH-DSA at the 128s and 256s levels are congruent to 2. The `8` and `9` schemes close that gap. Each is an eight-character code with one selector character, one type character, and a three-character Index and Ondex, like the `3` scheme, but with one and two lead bytes respectively, in the same way that the `2` and `3` selectors of the basic four-character fixed tables add lead bytes to the `1` scheme. The selector for a post-quantum indexed signature is therefore not a matter of choice: `3` for a raw size that is a multiple of 3, `8` for a raw size congruent to 2 modulo 3, and `9` for a raw size congruent to 1 modulo 3. Post-quantum indexed signature codes MUST use these three eight-character schemes and MUST NOT use the two-, four-, or six-character schemes. The reasoning matches the policy for the basic tables: eight characters instead of four add a negligible fraction to a signature of at least 2,420 bytes, and three-character indices accommodate key lists of up to 262,144 keys. As for Ed448, each post-quantum scheme has a dual-indexed code and a current-only code.
 
 ##### Indexed code table
@@ -793,6 +795,8 @@ Which of the three four-character fixed tables a given Primitive occupies is not
 NIST finalized its first three post-quantum cryptography standards in August 2024: ML-KEM (FIPS 203) [[FIPS203](#FIPS203)], ML-DSA (FIPS 204) [[FIPS204](#FIPS204)], and SLH-DSA (FIPS 205) [[FIPS205](#FIPS205)]. The tables below define codes for all three. ML-DSA and SLH-DSA are signature schemes. ML-KEM is a key-encapsulation mechanism, and its codes are described under Post-Quantum Key Establishment and Encryption. A further signature standard, FN-DSA (FIPS 206), based on the Falcon algorithm, had not been published as of this writing. Codes for it are expected to be added once its parameters and encodings are final.
 
 Where an algorithm family defines many parameter sets, only a subset is admitted. Admitting every variant of an algorithm invites the use of variants that have received little implementation scrutiny, which weakens rather than strengthens the security of the ecosystem. FIPS 205 defines twelve SLH-DSA parameter sets, comprising two hash families, three security levels, and a small-signature (`s`) and fast-signing (`f`) variant at each level. Only the six `s` parameter sets have entries below. The `f` variants trade roughly a factor of two to three in signature size for signing speed, which is the wrong trade for a protocol whose signatures are transmitted and archived far more often than they are generated. FIPS 203 defines three ML-KEM parameter sets, at security categories 1, 3 and 5. Only ML-KEM-768 and ML-KEM-1024 have entries below.
+
+The ECDSA secp384r1 (P-384) Primitives also occupy the four-character tables. The 48-byte private key seed, which is the private scalar, and the 96-byte signature have a pad size of zero and cannot take a shorter code. The verification key is the 49-byte compressed point of SEC 1 [[SEC1](#SEC1)], which could take a two-character code. A quantum adversary can break P-384, so its keys MUST NOT consume an entry in the two-character table, which has only 64.
 
 ### Table format
 
@@ -1034,6 +1038,9 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAZ`   | Seed of SLH-DSA-SHAKE-192s private key [[FIPS205](#FIPS205)] |      4      |              |      100      |
 |   `1AAa`   | Seed of SLH-DSA-SHA2-256s private key [[FIPS205](#FIPS205)] |      4      |              |      132      |
 |   `1AAb`   | Seed of SLH-DSA-SHAKE-256s private key [[FIPS205](#FIPS205)] |      4      |              |      132      |
+|   `1AAd`   | Seed of ECDSA secp384r1 private key [[FIPS186-5](#FIPS186-5)] |      4      |              |      68      |
+|   `1AAe`   | ECDSA secp384r1 signature [[FIPS186-5](#FIPS186-5)] |      4      |              |      132      |
+|   `1AAf`   | SHA2-384 Digest [[FIPS180-4](#FIPS180-4)] |      4      |              |      68      |
 |            |  Basic Four Character Codes with 1 Lead Byte  |             |              |              |
 |   `2AAA`   | ML-DSA-44 signature [[FIPS204](#FIPS204)] |      4      |              |      3232      |
 |   `2AAB`   | Seed of ML-DSA-44 private key [[FIPS204](#FIPS204)] |      4      |              |      48      |
@@ -1057,6 +1064,8 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `3AAD`   | SLH-DSA-SHAKE-256s public verification key [[FIPS205](#FIPS205)] |      4      |              |      92      |
 |   `3AAE`   | Seed of ML-KEM-768 decapsulation key [[FIPS203](#FIPS203)] |      4      |              |      92      |
 |   `3AAF`   | Seed of ML-KEM-1024 decapsulation key [[FIPS203](#FIPS203)] |      4      |              |      92      |
+|   `3AAG`   | ECDSA secp384r1 verification key non-transferable, basic derivation [[FIPS186-5](#FIPS186-5)] |      4      |              |      72      |
+|   `3AAH`   | ECDSA secp384r1 verification or encryption key, basic derivation [[FIPS186-5](#FIPS186-5)] |      4      |              |      72      |
 |            |  Variable Raw Size Codes  |             |              |              |
 |   `1AAO`   | Escape code for escaping special map field values |      4      |              |      4      |
 |   `1AAP`   | Empty value for nonce or string |      4      |              |      4      |
@@ -1136,6 +1145,8 @@ A compliant KERI/ACDC genus MUST have the following codes in its contextual inde
 |           | Indexed Four Character Codes       |             |              |              |              |
 |   `0A##`  | Ed448 indexed signature  dual          |      4      |       1      |       1      |      156     |
 |   `0B##`  | Ed448 indexed signature current only   |      4      |       1      |       1      |      156     |
+|`0C##` | ECDSA secp384r1 indexed signature dual |      4      |       1      |       1      |      132     |
+|`0D##` | ECDSA secp384r1 indexed signature current only |      4      |       1      |       1      |      132     |
 |           | Indexed Six Character Codes        |             |              |              |              |
 | `2A####`  | Ed25519 indexed sig big dual           |      6      |       2      |       2      |      92      |
 | `2B####`  | Ed25519 indexed sig big current only   |      6      |       2      |       2      |      92      |
@@ -1150,6 +1161,8 @@ A compliant KERI/ACDC genus MUST have the following codes in its contextual inde
 |`3F######` | SLH-DSA-SHA2-192s indexed signature big current only |      8      |       3      |       3      |      21640     |
 |`3G######` | SLH-DSA-SHAKE-192s indexed signature big dual |      8      |       3      |       3      |      21640     |
 |`3H######` | SLH-DSA-SHAKE-192s indexed signature big current only |      8      |       3      |       3      |      21640     |
+|`3I######` | ECDSA secp384r1 indexed signature big dual |      8      |       3      |       3      |      136     |
+|`3J######` | ECDSA secp384r1 indexed signature big current only |      8      |       3      |       3      |      136     |
 |           | Indexed Eight Character Codes with 1 Lead Byte |             |              |              |              |
 |`8A######` | ML-DSA-44 indexed signature big dual |      8      |       3      |       3      |      3236     |
 |`8B######` | ML-DSA-44 indexed signature big current only |      8      |       3      |       3      |      3236     |
@@ -1645,6 +1658,14 @@ The HPKE codes, `4J` through `9AAJ`, name a complete suite. Each holds one singl
 <a id="IANA-HPKE">30</a><a id="ref30"></a>. IANA Hybrid Public Key Encryption (HPKE) registry, https://www.iana.org/assignments/hpke/hpke.xhtml
 
 <a id="HPKE-PQ">31</a><a id="ref31"></a>. IETF Internet-Draft draft-ietf-hpke-pq-05 [Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE](https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/05/). R. Barnes; D. Connolly. 2026-07. Status: work in progress
+
+<a id="FIPS186-5">32</a><a id="ref32"></a>. FIPS 186-5, Digital Signature Standard (DSS). National Institute of Standards and Technology, February 2023. https://doi.org/10.6028/NIST.FIPS.186-5
+
+<a id="SP800-186">33</a><a id="ref33"></a>. NIST SP 800-186, Recommendations for Discrete Logarithm-based Cryptography: Elliptic Curve Domain Parameters. L. Chen; D. Moody; K. Randall; A. Regenscheid; A. Robinson. National Institute of Standards and Technology, February 2023. https://doi.org/10.6028/NIST.SP.800-186
+
+<a id="FIPS180-4">34</a><a id="ref34"></a>. FIPS 180-4, Secure Hash Standard (SHS). National Institute of Standards and Technology, August 2015. https://doi.org/10.6028/NIST.FIPS.180-4
+
+<a id="SEC1">35</a><a id="ref35"></a>. SEC 1: Elliptic Curve Cryptography, Version 2.0. Certicom Research, May 2009. https://www.secg.org/sec1-v2.pdf
 
 ### Informative section
 
