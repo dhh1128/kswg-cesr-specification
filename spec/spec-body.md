@@ -1602,9 +1602,9 @@ ML-KEM [[FIPS203](#FIPS203)] lets a sender establish a shared secret with the ho
 
 Two families of cipher codes in the variable-size tables use these keys.
 
-The AES-256-GCM codes, `4I` through `9AAI`, hold a 12-byte nonce, then the ciphertext, then the 16-byte authentication tag [[SP800-38D](#SP800-38D)]. The context in which the Primitive appears supplies the key and any additional authenticated data, in the same way that it supplies the recipient key of an X25519 sealed box. A producer that generates nonces at random MUST NOT encrypt more than 2^32 times under one key, which is the limit in Section 8.3 of SP 800-38D.
+The AES-256-GCM codes, `4I` through `9AAI`, hold a 12-byte nonce, then the ciphertext, then the 16-byte authentication tag [[SP800-38D](#SP800-38D)]. The context in which the Primitive appears supplies the key and any additional authenticated data, in the same way that it supplies the recipient key of an X25519 sealed box. A nonce MUST NOT be used twice under one key. When nonces are generated at random, the total number of encryptions under one key, counted across every producer that holds it, MUST NOT exceed 2^32, which is the limit in Section 8.3 of SP 800-38D.
 
-The HPKE codes, `4J` through `9AAJ`, name a complete suite. They hold the output of HPKE [[RFC9180](#RFC9180)] in Base mode with the KEM ML-KEM-1024 (HPKE KEM identifier `0x0042` [[HPKE-MLKEM](#HPKE-MLKEM)]), the KDF HKDF-SHA384 (`0x0002`), and the AEAD AES-256-GCM (`0x0002`), as registered in the IANA HPKE registry [[IANA-HPKE](#IANA-HPKE)]. The raw bytes are the 1,568-byte encapsulated key `enc` followed by the AEAD ciphertext, which includes its 16-byte tag. The context supplies the `info` and additional authenticated data parameters. The registry marks the ML-KEM KEMs as unable to support the Auth and AuthPSK modes, so a sender who must be authenticated signs separately. A recipient can select every algorithm in the suite from the code alone. The HPKE Base codes `4F` through `9AAF` do not name a suite, so they do not offer that property.
+The HPKE codes, `4J` through `9AAJ`, name a complete suite. Each holds one single-shot HPKE [[RFC9180](#RFC9180)] encryption in Base mode with the KEM ML-KEM-1024 (HPKE KEM identifier `0x0042` [[HPKE-PQ](#HPKE-PQ)]), the KDF HKDF-SHA384 (`0x0002`), and the AEAD AES-256-GCM (`0x0002`), as registered in the IANA HPKE registry [[IANA-HPKE](#IANA-HPKE)]. The raw bytes are the 1,568-byte encapsulated key `enc` followed by one AEAD ciphertext, which includes its 16-byte tag, so a value is at least 1,584 bytes. The context supplies the recipient's key and the `info` and additional authenticated data parameters. The ML-KEM KEMs support the Base and PSK modes of HPKE and not the Auth and AuthPSK modes. These codes use Base mode, which does not authenticate the sender, so a protocol that needs sender authentication provides it by other means, such as a signature. The decapsulation key that HPKE uses for ML-KEM is the same 64-byte seed that the seed codes hold. A recipient can select every algorithm in the suite from the code alone. The HPKE Base codes `4F` through `9AAF` do not name a suite, so they do not offer that property.
 
 ## Bibliography
 
@@ -1644,6 +1644,8 @@ The HPKE codes, `4J` through `9AAJ`, name a complete suite. They hold the output
 
 <a id="IANA-HPKE">30</a><a id="ref30"></a>. IANA Hybrid Public Key Encryption (HPKE) registry, https://www.iana.org/assignments/hpke/hpke.xhtml
 
+<a id="HPKE-PQ">31</a><a id="ref31"></a>. IETF Internet-Draft draft-ietf-hpke-pq-05 [Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE](https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/05/). R. Barnes; D. Connolly. 2026-07. Status: work in progress
+
 ### Informative section
 
 <a id="BOM">4</a><a id="ref4"></a>. BOM, UTF Byte Order Mark, https://en.wikipedia.org/wiki/Byte_order_mark
@@ -1675,6 +1677,5 @@ The HPKE codes, `4J` through `9AAJ`, name a complete suite. They hold the output
 
 <a id="PQCollisonCost">18</a><a id="ref18"></a>. Cost analysis of hash collisions: Will quantum computers make SHARCS obsolete?, D.J. Berstein, https://cr.yp.to/hash/collisioncost-20090517.pdf
 
-<a id="HPKE-MLKEM">31</a><a id="ref31"></a>. IETF Internet-Draft draft-connolly-cfrg-hpke-mlkem-04 [ML-KEM for HPKE](https://datatracker.ietf.org/doc/draft-connolly-cfrg-hpke-mlkem/04/). D. Connolly. 2024-10. Status: expired Internet-Draft
 
 
