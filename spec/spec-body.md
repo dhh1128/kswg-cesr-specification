@@ -1046,10 +1046,10 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `2AAI`   | SLH-DSA-SHAKE-128s signature [[FIPS205](#FIPS205)] |      4      |              |      10480      |
 |   `2AAJ`   | SLH-DSA-SHA2-256s signature [[FIPS205](#FIPS205)] |      4      |              |      39728      |
 |   `2AAK`   | SLH-DSA-SHAKE-256s signature [[FIPS205](#FIPS205)] |      4      |              |      39728      |
-|   `2AAL`   | ML-KEM-768 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      1584      |
-|   `2AAM`   | ML-KEM-768 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      1456      |
-|   `2AAN`   | ML-KEM-1024 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      2096      |
-|   `2AAO`   | ML-KEM-1024 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      2096      |
+|   `2AAP`   | ML-KEM-1024 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      2096      |
+|   `2AAQ`   | ML-KEM-1024 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      2096      |
+|   `2AAR`   | ML-KEM-768 encapsulation key [[FIPS203](#FIPS203)] |      4      |              |      1584      |
+|   `2AAS`   | ML-KEM-768 ciphertext [[FIPS203](#FIPS203)] |      4      |              |      1456      |
 |            |  Basic Four Character Codes with 2 Lead Bytes  |             |              |              |
 |   `3AAA`   | ML-DSA-44 public verification key [[FIPS204](#FIPS204)] |      4      |              |      1756      |
 |   `3AAB`   | ML-DSA-87 signature [[FIPS204](#FIPS204)] |      4      |              |      6176      |
