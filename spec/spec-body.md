@@ -1038,9 +1038,9 @@ A compliant KERI/ACDC genus MUST have the following codes in its Primitive and C
 |   `1AAZ`   | Seed of SLH-DSA-SHAKE-192s private key [[FIPS205](#FIPS205)] |      4      |              |      100      |
 |   `1AAa`   | Seed of SLH-DSA-SHA2-256s private key [[FIPS205](#FIPS205)] |      4      |              |      132      |
 |   `1AAb`   | Seed of SLH-DSA-SHAKE-256s private key [[FIPS205](#FIPS205)] |      4      |              |      132      |
-|   `1AAd`   | Seed of ECDSA secp384r1 private key [[FIPS186-5](#FIPS186-5)] |      4      |              |      68      |
 |   `1AAe`   | ECDSA secp384r1 signature [[FIPS186-5](#FIPS186-5)] |      4      |              |      132      |
 |   `1AAf`   | SHA2-384 Digest [[FIPS180-4](#FIPS180-4)] |      4      |              |      68      |
+|   `1AAg`   | Seed of ECDSA secp384r1 private key [[FIPS186-5](#FIPS186-5)] |      4      |              |      68      |
 |            |  Basic Four Character Codes with 1 Lead Byte  |             |              |              |
 |   `2AAA`   | ML-DSA-44 signature [[FIPS204](#FIPS204)] |      4      |              |      3232      |
 |   `2AAB`   | Seed of ML-DSA-44 private key [[FIPS204](#FIPS204)] |      4      |              |      48      |
